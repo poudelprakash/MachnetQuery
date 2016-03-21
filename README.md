@@ -25,3 +25,20 @@ MQ('.wrapper').hide();
 ```js
 MQ('.wrapper').show();
 ```
+
+## ajax request examples
+
+```
+MQ.ajax({
+    url:"http://localhost:3000",//request URL
+    type:"GET",//Request type GET/POST
+    //CALLBACK FUNCTION with RESPONSE as argument
+    success: function(data){
+      console.log(data);
+    }
+
+  });
+```
+
+TODO: write documentation for ajax
+similar to <https://github.com/flouthoc/minAjax.js>

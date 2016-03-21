@@ -11,6 +11,25 @@
 	<script type="text/javascript">
 
 		var el = MQ('.wrapper');
+
+		MQ.ajax({
+		    url:"http://localhost:3000/api/v1/hotels/1/rooms/",//request URL
+		    type:"GET",//Request type GET/POST
+		    data:{
+		    	check_in:"2016-03-17",
+		    	check_out:"2016-03-18"
+		    },
+		    //CALLBACK FUNCTION with RESPONSE as argument
+		    success: function(data, status, state){
+		    	console.log(data);
+		    	console.log(status);
+		    },
+		    error: function(data, status, state){
+		    	console.log('data: ', data);
+		    	console.log('status: ', status);
+		    	console.log('state: ', state);
+		    }
+		});
 	</script>
 </body>
 </html>

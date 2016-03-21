@@ -54,6 +54,112 @@
         return this;
     };
 
+
+    //============================ AJAX Utilities ================================
+    var initXMLhttp = function() {
+        var xmlhttp;
+        if (window.XMLHttpRequest) {
+            //code for IE7,firefox chrome and above
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            //code for Internet Explorer
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        return xmlhttp;
+    }
+
+    // change data to url params when get request
+    var convertDataToGetParams = function(data) {
+        var paramsArray = [];
+
+        if( typeof data === "string" ){
+            var tmpArr = String.prototype.split.call(data,'&');
+            for(var i = 0, j = tmpArr.length; i < j; i++){
+                var datum = tmpArr[i].split('=');
+                paramsArray.push(encodeURIComponent(datum[0]) + "=" + encodeURIComponent(datum[1]));
+            }
+        }else if( typeof data === 'object' && !( data instanceof String || (FormData && data instanceof FormData) ) ){
+            for (var k in data) {
+                var datum = data[k];
+                if( Object.prototype.toString.call(datum) == "[object Array]" ){
+                    for(var i = 0, j = datum.length; i < j; i++) {
+                        paramsArray.push(encodeURIComponent(k) + "[]=" + encodeURIComponent(datum[i]));
+                    }
+                }else{
+                    paramsArray.push(encodeURIComponent(k) + "=" + encodeURIComponent(datum));
+                }
+            }
+        }
+        return paramsArray.join('&');
+    }
+
+    MQ.ajax = function(config) {
+        /*Config Structure
+        url:"reqesting URL"
+        type:"GET or POST"
+        async: "(OPTIONAL) Boolean True for async and False for Non-async | By default its Async"
+        data: "(OPTIONAL) another Nested Object which should contains reqested Properties in form of Object Properties"
+        success: "(OPTIONAL) Callback function to process after response | function(data,status)"
+        */
+
+        if (!config.url) {
+            console.log("No Url!");
+            return;
+        }
+
+        if (!config.type) {
+            console.log("No Default type (GET/POST) given!");
+            return;
+        }
+
+        if (!config.async) {
+            config.async = true;
+        }
+
+        // common Content-type / Mime type
+        // application/json
+        // application/x-www-form-urlencoded
+        // multipart/form-data
+        // text/html
+        if (!config.contentType) {
+            config.contentType = "application/x-www-form-urlencoded";
+        }
+
+        var xmlhttp = initXMLhttp();
+
+        xmlhttp.onreadystatechange = function() {
+
+            // if request completed
+            if (xmlhttp.readyState === 4){
+
+                if (xmlhttp.status === 200){
+                   config.success(xmlhttp.responseText, xmlhttp.status, xmlhttp.readyState);
+                } else{
+                    config.error(xmlhttp.responseText, xmlhttp.status, xmlhttp.readyState); 
+                }
+
+            }else{
+                // is incomplete
+
+            }
+
+        }
+
+        if (config.type === "GET") {
+            var urlParams = convertDataToGetParams(config.data)
+            xmlhttp.open("GET", config.url + "?" + urlParams, config.async);
+            xmlhttp.send();
+
+        }
+        if (config.type === "POST") {
+            xmlhttp.open("POST", config.url, config.async);
+            xmlhttp.setRequestHeader("Content-type", config.contentType);
+            xmlhttp.send(config.data);
+
+        }
+    }
+
     // Assign our MQ object to global window object.
     if(!window.MQ) {
         window.MQ = MQ;
