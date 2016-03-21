@@ -92,7 +92,16 @@
             }
         }
         return paramsArray.join('&');
-    }
+    };
+
+    // change string response from ajax request to json
+    var parseAjaxResponse = function(string){
+        try {
+            return JSON.parse(string);
+        } catch(error) {
+            return string;
+        }
+    };
 
     MQ.ajax = function(config) {
         /*Config Structure
@@ -134,7 +143,7 @@
             if (xmlhttp.readyState === 4){
 
                 if (xmlhttp.status === 200){
-                   config.success(xmlhttp.responseText, xmlhttp.status, xmlhttp.readyState);
+                   config.success(parseAjaxResponse(xmlhttp.responseText), xmlhttp.status, xmlhttp.readyState);
                 } else{
                     config.error(xmlhttp.responseText, xmlhttp.status, xmlhttp.readyState); 
                 }
